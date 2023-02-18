@@ -30,12 +30,14 @@ def main():
     # converter method including CAs
     def pfx_to_pem(pfx_path, pfx_password, pkey_path, pubkey_path, pem_path, pem_ca_path):
 
+        pfx_password_bytes = bytes(pfx_password, 'UTF-8')
+
         print('Opening:', pfx_path)
         with open(pfx_path, 'rb') as f_pfx:
             pfx = f_pfx.read()
 
         print('Loading P12 (PFX) contents:')
-        p12 = OpenSSL.crypto.load_pkcs12(pfx, pfx_password)
+        p12 = OpenSSL.crypto.load_pkcs12(pfx, pfx_password_bytes)
 
         print('Creating Private Key File:', pkey_path)
         with open(pkey_path, 'wb') as f:
@@ -70,11 +72,14 @@ def main():
 #GUI --------------------------------------------------------
     sg.theme('LightGrey1')   #theme
 
-    layout = [  [sg.Text('Enter password to decrypt PFX:')],
+    layout = [  
+                [sg.Text('Enter password to decrypt PFX:')],
                 [sg.InputText(key='pwd')],
-                [sg.Text('File path:', size=(15, 1), justification='left')],
+                [sg.Text('PFX file path:', size=(15, 1), justification='left')],
                 [sg.InputText(key='file', justification='left'), sg.FileBrowse()],
                 [sg.CBox('Export CA', key='catrue')],
+                [sg.Text('Output files path:', size=(15, 1), justification='left')],
+                [sg.InputText(key='outpath', justification='left'), sg.FolderBrowse()],
                 [sg.Button('Run'), sg.Button('Cancel')] ]
 
     window = sg.Window('PFXtract v.1 - B.Schoenecker', layout, icon='icon.ico')
@@ -84,11 +89,11 @@ def main():
         if event == sg.WIN_CLOSED or event == 'Cancel': # if user closes window or clicks cancel
             break
         elif event == "Run":
-            pfx_to_pem(pfx_path=values['file'], pfx_password=values['pwd'],pkey_path='private.key',pubkey_path='public.key',pem_path='cert.pem',pem_ca_path='ca.pem')
+            pfx_to_pem(pfx_path=values['file'], pfx_password=values['pwd'],pkey_path=values['outpath']+'/'+'private.key',pubkey_path=values['outpath']+'/'+'public.key',pem_path=values['outpath']+'/'+'cert.pem',pem_ca_path=values['outpath']+'/'+'ca.pem')
             
             confirm = sg.popup_yes_no('File extraction complete!', 'Would you like to open the file location?', relative_location=(100, -150))
             if confirm == 'Yes':
-                explore_func(values['file'])
+                explore_func(values['outpath']+'/'+'private.key')
                 sys.exit()
             elif confirm == 'No':
                 sys.exit()
