@@ -91,7 +91,7 @@ def main():
         elif event == "Run":
             pfx_to_pem(pfx_path=values['file'], pfx_password=values['pwd'],pkey_path=values['outpath']+'/'+'private.key',pubkey_path=values['outpath']+'/'+'public.key',pem_path=values['outpath']+'/'+'cert.pem',pem_ca_path=values['outpath']+'/'+'ca.pem')
             
-            confirm = sg.popup_yes_no('File extraction complete!', 'Would you like to open the file location?', relative_location=(100, -150))
+            confirm = sg.popup_yes_no('File extraction complete!', 'Would you like to open the file location?', relative_location=(100, -150), grab_anywhere=True, no_titlebar=True)
             if confirm == 'Yes':
                 explore_func(values['outpath']+'/'+'private.key')
                 sys.exit()
